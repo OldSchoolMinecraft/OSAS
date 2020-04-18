@@ -26,18 +26,25 @@ public class PlayerHandler extends PlayerListener
             try
             {
                 boolean authenticated = false;
-                for (Hook hook : osas.manager.getHooks())
-                    if (hook.authenticate(username, ip))
+                for (String hook_name : osas.manager.getHooksMap().keySet())
+                {
+                    Hook hook = osas.manager.getHooksMap().get(hook_name);
+                    boolean result = hook.authenticate(username, ip);
+                    System.out.println(String.format("OSAS/%s: Authentication result for '%s': %s", hook_name, username, result));
+                    if (result)
                         authenticated = true;
+                }
+                
                 if (authenticated)
                     event.allow();
                 else
                     event.disallow(Result.KICK_OTHER, "Authentication failed");
+                
+                event.removeConnectionPause(pause);
             } catch (IOException ex) {
                 event.removeConnectionPause(pause);
                 ex.printStackTrace();
             }
         });
-        event.removeConnectionPause(pause);
     }
 }

@@ -4,9 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,17 +30,10 @@ public class OSAS extends JavaPlugin
         // register player event handler
         getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerHandler, Priority.Normal, this);
 
-        
-
         System.out.println("OSAS enabled.");
     }
 
-    public boolean fireHooks(Player player, String ip)
-    {
-        return false;
-    }
-    
-    private String get(String url)
+    public String get(String url)
     {
         try
         {
