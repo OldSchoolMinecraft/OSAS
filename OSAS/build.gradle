@@ -22,6 +22,9 @@ dependencies
 	
 	compile group: 'org.json', name: 'json', version: '20180813'
 	extraLibs 'org.json:json:20180813'
+	
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+	extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
 }
 
 jar

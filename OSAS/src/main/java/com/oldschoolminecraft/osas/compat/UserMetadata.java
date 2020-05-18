@@ -1,4 +1,4 @@
-package com.oldschoolminecraft.osas.util;
+package com.oldschoolminecraft.osas.compat;
 
 import java.io.Serializable;
 

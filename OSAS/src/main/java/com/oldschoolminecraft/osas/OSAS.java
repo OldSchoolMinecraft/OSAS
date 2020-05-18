@@ -19,7 +19,8 @@ public class OSAS extends JavaPlugin
 
     public HookManager manager;
     public PlayerHandler playerHandler;
-
+    public final boolean debugMode = true;
+    
     public void onEnable()
     {
         instance = this;
@@ -28,8 +29,8 @@ public class OSAS extends JavaPlugin
         playerHandler = new PlayerHandler();
 
         // register player event handler
-        getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerHandler, Priority.Normal, this);
-
+        getServer().getPluginManager().registerEvent(Type.PLAYER_PRELOGIN, playerHandler, Priority.Normal, this);
+        
         System.out.println("OSAS enabled.");
     }
 
