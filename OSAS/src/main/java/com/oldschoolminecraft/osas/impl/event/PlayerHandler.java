@@ -37,8 +37,11 @@ public class PlayerHandler extends PlayerListener
                 
                 if (authenticated)
                     event.allow();
-                else
+                else {
+                    //TODO: fallback authentication
                     event.disallow(Result.KICK_OTHER, "Authentication failed");
+                }
+                    
                 
                 event.removeConnectionPause(pause);
             } catch (IOException ex) {

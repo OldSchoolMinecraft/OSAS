@@ -33,7 +33,7 @@ public class OSAS extends JavaPlugin
         
         System.out.println("OSAS enabled.");
     }
-
+    
     public String get(String url)
     {
         try

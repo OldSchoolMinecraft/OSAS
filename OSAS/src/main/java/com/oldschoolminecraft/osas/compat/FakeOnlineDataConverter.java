@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 
 import org.json.JSONObject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import me.moderator_man.meridian.serial.FormatReader;
 
 public class FakeOnlineDataConverter
@@ -21,6 +23,8 @@ public class FakeOnlineDataConverter
                 FormatReader<UserMetadata> reader = new FormatReader<UserMetadata>();
                 UserMetadata meta = reader.read(f.getAbsolutePath());
                 JSONObject con = convertToJSON(meta);
+                ObjectMapper mapper = new ObjectMapper();
+                
             }
 
             // TODO: loop through FakeOnline data files, then convert them to JSON and write

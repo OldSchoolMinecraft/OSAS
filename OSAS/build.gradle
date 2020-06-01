@@ -16,7 +16,7 @@ configurations
 
 dependencies
 {
-	compile (name:'Project-Poseidon', ext:'jar')
+	compile (name:'poseidon', ext:'jar')
 	compile (name:'meridian-serial-1.1', ext:'jar')
 	extraLibs (name:'meridian-serial-1.1', ext:'jar')
 	
