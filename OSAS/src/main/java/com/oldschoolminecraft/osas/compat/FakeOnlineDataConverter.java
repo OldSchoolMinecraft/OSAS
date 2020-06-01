@@ -9,27 +9,25 @@ import java.nio.file.Paths;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oldschoolminecraft.osas.Util;
 
 import me.moderator_man.meridian.serial.FormatReader;
 
 public class FakeOnlineDataConverter
 {
-    public void convertAll()
+    public void convert(String username)
     {
         try
         {
-            for (File f : new File("fo-data").listFiles())
-            {
-                FormatReader<UserMetadata> reader = new FormatReader<UserMetadata>();
-                UserMetadata meta = reader.read(f.getAbsolutePath());
-                JSONObject con = convertToJSON(meta);
-                ObjectMapper mapper = new ObjectMapper();
-                
-            }
-
-            // TODO: loop through FakeOnline data files, then convert them to JSON and write
-            // them back to disk
+            FormatReader<UserMetadata> reader = new FormatReader<UserMetadata>();
+            UserMetadata meta = reader.read("fo-data/" + username);
+            
+            JSONObject obj = convertToJSON(meta);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(new File(Util.getUsersDirectory() + "/" + username + ".json"), obj);
+            System.out.println("Converted FakeOnline data for: " + username);
         } catch (Exception ex) {
+            System.out.println("Failed to convert FakeOnline data for: " + username);
             ex.printStackTrace();
         }
     }

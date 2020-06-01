@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import com.oldschoolminecraft.osas.impl.HookManager;
 import com.oldschoolminecraft.osas.impl.event.PlayerHandler;
+import com.oldschoolminecraft.osas.impl.fallback.FallbackManager;
 
 public class OSAS extends JavaPlugin
 {
@@ -19,6 +20,7 @@ public class OSAS extends JavaPlugin
 
     public HookManager manager;
     public PlayerHandler playerHandler;
+    public FallbackManager fallbackManager;
     public final boolean debugMode = true;
     
     public void onEnable()
@@ -27,11 +29,22 @@ public class OSAS extends JavaPlugin
 
         manager = new HookManager();
         playerHandler = new PlayerHandler();
-
+        fallbackManager = new FallbackManager();
+        
+        setup();
+        
         // register player event handler
         getServer().getPluginManager().registerEvent(Type.PLAYER_PRELOGIN, playerHandler, Priority.Normal, this);
         
         System.out.println("OSAS enabled.");
+    }
+    
+    private void setup()
+    {
+        if (!Util.directoryExists(Util.getPluginDirectory()))
+            Util.createDirectory(Util.getPluginDirectory());
+        if (!Util.directoryExists(Util.getUsersDirectory()))
+            Util.createDirectory(Util.getUsersDirectory());
     }
     
     public String get(String url)
