@@ -2,3 +2,16 @@ name: OSAS
 version: 0
 author: Old School Minecraft
 main: com.oldschoolminecraft.osas.OSAS
+commands:
+    register:
+        description: Register an account
+        usage: /register <password> <confirm>
+    login:
+        description: Login to your account
+        usage: /login <password>
+    changepassword:
+        description: Change your password
+        usage: /changepassword <old> <new>
+    deleteaccount:
+        description: Delete an account
+        usage: /deleteaccount <username>

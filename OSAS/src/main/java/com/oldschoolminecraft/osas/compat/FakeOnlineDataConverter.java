@@ -1,6 +1,5 @@
 package com.oldschoolminecraft.osas.compat;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -8,27 +7,38 @@ import java.nio.file.Paths;
 
 import org.json.JSONObject;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oldschoolminecraft.osas.OSAS;
 import com.oldschoolminecraft.osas.Util;
 
+import me.moderator_man.fo.user.UserMetadata;
 import me.moderator_man.meridian.serial.FormatReader;
 
 public class FakeOnlineDataConverter
 {
-    public void convert(String username)
+    public boolean hasLegacyData(String username)
+    {
+        return Util.fileExists("fo-data/" + username + ".dat");
+    }
+    
+    public boolean convert(String username, String password)
     {
         try
         {
             FormatReader<UserMetadata> reader = new FormatReader<UserMetadata>();
-            UserMetadata meta = reader.read("fo-data/" + username);
+            UserMetadata meta = reader.read("fo-data/" + username + ".dat");
             
-            JSONObject obj = convertToJSON(meta);
-            ObjectMapper mapper = new ObjectMapper();
-            mapper.writeValue(new File(Util.getUsersDirectory() + "/" + username + ".json"), obj);
-            System.out.println("Converted FakeOnline data for: " + username);
+            if (meta.getPassword().equals(Util.sha256(password)))
+            {
+                String[] hash = Util.hash(password);
+                OSAS.instance.fallbackManager.registerPlayer(username, hash[0], hash[1], false);
+                System.out.println("Converted FakeOnline data for: " + username);
+                return true;
+            }
+            return false;
         } catch (Exception ex) {
             System.out.println("Failed to convert FakeOnline data for: " + username);
             ex.printStackTrace();
+            return false;
         }
     }
 

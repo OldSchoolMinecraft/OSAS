@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oldschoolminecraft.osas.OSAS;
 import com.oldschoolminecraft.osas.Util;
 
 public class FallbackManager
@@ -39,14 +40,22 @@ public class FallbackManager
                     player.sendMessage(ChatColor.AQUA + "You will only have to do this once!");
                 }
             } else {
-                sendError((CommandSender) player, "Register with /register <password> <confirm>");
-                player.sendMessage(ChatColor.AQUA + "You will NOT be required to login when you join!");
+                if (OSAS.instance.dc.hasLegacyData(username))
+                    sendError((CommandSender) player, "Login with /login <password>");
+                else {
+                    sendError((CommandSender) player, "Register with /register <password> <confirm>");
+                    player.sendMessage(ChatColor.AQUA + "You will NOT be required to login when you join!");
+                }
             }
         } else if (isRegistered(name)) {
             sendError((CommandSender) player, "Login with /login <password>");
         } else {
-            sendError((CommandSender) player, "Register with /register <password> <confirm>");
-            sendError((CommandSender) player, "You WILL be required to login when you join!");
+            if (OSAS.instance.dc.hasLegacyData(username))
+                sendError((CommandSender) player, "Login with /login <password>");
+            else {
+                sendError((CommandSender) player, "Register with /register <password> <confirm>");
+                sendError((CommandSender) player, "You WILL be required to login when you join!");
+            }
         }
     }
     
@@ -87,23 +96,43 @@ public class FallbackManager
         authenticatedPlayers.add(username);
     }
     
+    public void deauthenticatePlayer(String username)
+    {
+        authenticatedPlayers.remove(username);
+    }
+    
     public void freezePlayer(String username)
     {
         frozenPlayers.add(username);
     }
     
+    public void unfreezePlayer(String username)
+    {
+        frozenPlayers.remove(username);
+    }
+    
     public void approvePlayer(String username)
     {
         Account account = getAccount(username);
-        account.approved = true;
         deleteAccount(username);
-        createAccount(username, account);
+        registerPlayer(username, account.password, account.salt, true);
     }
     
-    public void createAccount(String username, Account account)
+    public void updateAccount(Account account)
+    {
+        deleteAccount(account.username);
+        registerPlayer(account.username, account.password, account.salt, account.approved);
+    }
+    
+    public void registerPlayer(String username, String password, String salt, boolean approved)
     {
         try
         {
+            Account account = new Account();
+            account.username = username;
+            account.password = password;
+            account.salt = salt;
+            account.approved = approved;
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(new File(Util.getUsersDirectory() + "/" + username + ".json"), account);
         } catch (Exception ex) {

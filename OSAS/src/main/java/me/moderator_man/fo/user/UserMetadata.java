@@ -1,4 +1,4 @@
-package com.oldschoolminecraft.osas.compat;
+package me.moderator_man.fo.user;
 
 import java.io.Serializable;
 
