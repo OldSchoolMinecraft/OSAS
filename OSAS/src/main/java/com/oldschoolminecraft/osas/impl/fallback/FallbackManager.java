@@ -25,8 +25,8 @@ public class FallbackManager
     
     public void handleFallbackForPlayer(String username)
     {
-        Player player = Bukkit.getPlayer(username);
-        String name = username;
+        Player player = Bukkit.getPlayer(username.toLowerCase());
+        String name = username.toLowerCase();
         
         if (isAuthenticated(name))
         {
@@ -73,46 +73,55 @@ public class FallbackManager
     
     public boolean isRegistered(String username)
     {
+        username = username.toLowerCase();
         return Util.fileExists(Util.getUsersDirectory() + "/" + username + ".json");
     }
     
     public boolean isAuthenticated(String username)
     {
+        username = username.toLowerCase();
         return authenticatedPlayers.contains(username);
     }
     
     public boolean isFrozen(String username)
     {
+        username = username.toLowerCase();
         return frozenPlayers.contains(username);
     }
     
     public boolean isApproved(String username)
     {
+        username = username.toLowerCase();
         return getAccount(username).approved;
     }
     
     public void authenticatePlayer(String username)
     {
+        username = username.toLowerCase();
         authenticatedPlayers.add(username);
     }
     
     public void deauthenticatePlayer(String username)
     {
+        username = username.toLowerCase();
         authenticatedPlayers.remove(username);
     }
     
     public void freezePlayer(String username)
     {
+        username = username.toLowerCase();
         frozenPlayers.add(username);
     }
     
     public void unfreezePlayer(String username)
     {
+        username = username.toLowerCase();
         frozenPlayers.remove(username);
     }
     
     public void approvePlayer(String username)
     {
+        username = username.toLowerCase();
         Account account = getAccount(username);
         deleteAccount(username);
         registerPlayer(username, account.password, account.salt, true);
@@ -128,6 +137,8 @@ public class FallbackManager
     {
         try
         {
+            username = username.toLowerCase();
+            
             Account account = new Account();
             account.username = username;
             account.password = password;
@@ -144,6 +155,7 @@ public class FallbackManager
     {
         try
         {
+            username = username.toLowerCase();
             ObjectMapper mapper = new ObjectMapper();
             return mapper.readValue(new File(Util.getUsersDirectory() + "/" + username + ".json"), Account.class);
         } catch (Exception ex) {
@@ -154,6 +166,7 @@ public class FallbackManager
     
     public void deleteAccount(String username)
     {
+        username = username.toLowerCase();
         if (isRegistered(username))
             new File(Util.getUsersDirectory() + "/" + username + ".json").delete();
     }
