@@ -47,20 +47,29 @@ public class PlayerHandler extends PlayerListener
             try
             {
                 boolean authenticated = false;
+                String module = "Fallback";
                 for (String hook_name : osas.manager.getHooksMap().keySet())
                 {
                     Hook hook = osas.manager.getHooksMap().get(hook_name);
                     boolean result = hook.authenticate(username, ip);
                     System.out.println(String.format("OSAS/%s: Authentication result for '%s': %s", hook_name, username, result));
                     if (result)
+                    {
                         authenticated = true;
+                        module = hook_name;
+                    }
                 }
 
                 if (authenticated)
                 {
                     event.allow();
                     
+                    // authenticate player
                     fm.authenticatePlayer(username);
+                    
+                    // log auth info
+                    fm.addAuthenticationRecord(username, module);
+                    
                     if (fm.isRegistered(username))
                     {
                         if (!fm.isApproved(username))
@@ -87,6 +96,7 @@ public class PlayerHandler extends PlayerListener
         try
         {
             fm.deauthenticatePlayer(event.getPlayer().getName());
+            fm.removeAuthenticationRecord(event.getPlayer().getName());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

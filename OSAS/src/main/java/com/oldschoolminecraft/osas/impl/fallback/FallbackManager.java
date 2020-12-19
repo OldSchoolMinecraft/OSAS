@@ -14,11 +14,15 @@ import com.oldschoolminecraft.osas.Util;
 
 public class FallbackManager
 {
+    private ArrayList<AuthenticationRecord> authenticationRecords;
+    
     private ArrayList<String> authenticatedPlayers;
     private ArrayList<String> frozenPlayers;
     
     public FallbackManager()
     {
+        this.authenticationRecords = new ArrayList<AuthenticationRecord>();
+        
         this.authenticatedPlayers = new ArrayList<String>();
         this.frozenPlayers = new ArrayList<String>();
     }
@@ -79,6 +83,10 @@ public class FallbackManager
     
     public boolean isAuthenticated(String username)
     {
+        for (AuthenticationRecord rec : authenticationRecords)
+            if (rec.username.toLowerCase().equals(username.toLowerCase()))
+                return true;
+        
         username = username.toLowerCase();
         return authenticatedPlayers.contains(username);
     }
@@ -93,6 +101,26 @@ public class FallbackManager
     {
         username = username.toLowerCase();
         return getAccount(username).approved;
+    }
+    
+    public void addAuthenticationRecord(String username, String module)
+    {
+        authenticationRecords.add(new AuthenticationRecord(username, module));
+    }
+    
+    public void removeAuthenticationRecord(String username)
+    {
+        for (AuthenticationRecord rec : authenticationRecords)
+            if (rec.username.toLowerCase().equals(username.toLowerCase()))
+                authenticationRecords.remove(rec);
+    }
+    
+    public AuthenticationRecord getAuthenticationRecord(String username)
+    {
+        for (AuthenticationRecord rec : authenticationRecords)
+            if (rec.username.toLowerCase().equals(username.toLowerCase()))
+                return rec;
+        return null;
     }
     
     public void authenticatePlayer(String username)
