@@ -1,5 +1,6 @@
 package com.oldschoolminecraft.osas.impl.cmd.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -66,6 +67,7 @@ public class Login extends Command
             System.out.println(String.format("Player '%s' logged in.", ply.getName()));
         } else {
             fm.sendError(sender, "Invalid password!");
+            ply.kickPlayer(ChatColor.RED + "Invalid password!");
         }
         return true;
     }

@@ -38,7 +38,7 @@ public class PlayerHandler extends PlayerListener
 
     public void onPlayerPreLogin(PlayerPreLoginEvent event)
     {
-        String username = event.getName();
+        String username = event.getName().toLowerCase();
         String ip = event.getAddress().getHostAddress();
 
         ConnectionPause pause = event.addConnectionPause(osas, "OSAS");

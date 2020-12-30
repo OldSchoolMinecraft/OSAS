@@ -19,7 +19,7 @@ public class EntityHandler extends EntityListener
         if (event.getEntity() instanceof Player)
         {
             final Player player = (Player) event.getEntity();
-            if (!fm.isAuthenticated(player.getName()) || fm.isFrozen(player.getName()))
+            if (!fm.isAuthenticated(player.getName().toLowerCase()) || fm.isFrozen(player.getName().toLowerCase()))
                 event.setCancelled(true);
         }
     }
@@ -29,7 +29,7 @@ public class EntityHandler extends EntityListener
         if (event.getEntity() instanceof Player)
         {
             final Player player = (Player) event.getEntity();
-            if (!fm.isAuthenticated(player.getName()) || fm.isFrozen(player.getName()))
+            if (!fm.isAuthenticated(player.getName().toLowerCase()) || fm.isFrozen(player.getName().toLowerCase()))
                 event.setCancelled(true);
         }
     }
@@ -39,7 +39,7 @@ public class EntityHandler extends EntityListener
         if (event.getEntity() instanceof Player)
         {
             final Player player = (Player) event.getEntity();
-            if (!fm.isAuthenticated(player.getName()) || fm.isFrozen(player.getName()))
+            if (!fm.isAuthenticated(player.getName().toLowerCase()) || fm.isFrozen(player.getName().toLowerCase()))
                 event.setCancelled(true);
         }
     }
