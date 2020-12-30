@@ -95,8 +95,8 @@ public class PlayerHandler extends PlayerListener
     {
         try
         {
-            fm.deauthenticatePlayer(event.getPlayer().getName());
-            fm.removeAuthenticationRecord(event.getPlayer().getName());
+            fm.deauthenticatePlayer(event.getPlayer().getName().toLowerCase());
+            fm.removeAuthenticationRecord(event.getPlayer().getName().toLowerCase());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -109,7 +109,7 @@ public class PlayerHandler extends PlayerListener
         final Location toLoc = event.getTo();
         if (fromLoc.getX() == toLoc.getX() && fromLoc.getZ() == toLoc.getZ() && fromLoc.getY() > toLoc.getY())
             return;
-        if (!fm.isAuthenticated(player.getName()) || fm.isFrozen(player.getName()))
+        if (!fm.isAuthenticated(player.getName().toLowerCase()) || fm.isFrozen(player.getName().toLowerCase()))
         {
             this.warn(event.getPlayer());
             event.setCancelled(true);
@@ -119,37 +119,37 @@ public class PlayerHandler extends PlayerListener
 
     public void onPlayerDropItem(final PlayerDropItemEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerPickupItem(final PlayerPickupItemEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerBedEnter(final PlayerBedEnterEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerBucketFill(final PlayerBucketFillEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerChat(final PlayerChatEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
         {
             event.setMessage("");
             event.setCancelled(true);
@@ -159,7 +159,7 @@ public class PlayerHandler extends PlayerListener
 
     public void onPlayerCommandPreprocess(final PlayerCommandPreprocessEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
         {
             final String label = event.getMessage().split(" ")[0];
             if (label.equalsIgnoreCase("/register"))
@@ -174,19 +174,19 @@ public class PlayerHandler extends PlayerListener
 
     public void onPlayerInteract(final PlayerInteractEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerInteractEntity(final PlayerInteractEntityEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
     public void onPlayerPortal(final PlayerPortalEvent event)
     {
-        if (!fm.isAuthenticated(event.getPlayer().getName()) || fm.isFrozen(event.getPlayer().getName()))
+        if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()) || fm.isFrozen(event.getPlayer().getName().toLowerCase()))
             event.setCancelled(true);
     }
 
@@ -204,9 +204,9 @@ public class PlayerHandler extends PlayerListener
 
     private void warn(Player player)
     {
-        if (fm.isRegistered(player.getName()))
+        if (fm.isRegistered(player.getName().toLowerCase()))
             player.sendMessage(ChatColor.RED + "Login with /login <password>");
-        else if (osas.dc.hasLegacyData(player.getName()))
+        else if (osas.dc.hasLegacyData(player.getName().toLowerCase()))
             player.sendMessage(ChatColor.RED + "Login with /login <password>");
         else
             player.sendMessage(ChatColor.RED + "Register with /register <password> <confirm>");
