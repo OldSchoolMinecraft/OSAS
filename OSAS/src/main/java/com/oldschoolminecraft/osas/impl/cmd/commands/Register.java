@@ -19,7 +19,7 @@ public class Register extends Command
         if (args.length < 2)
             return false;
         
-        if (fm.isRegistered(ply.getName()) || osas.dc.hasLegacyData(ply.getName()))
+        if (fm.isRegistered(ply.getName().toLowerCase()) || osas.dc.hasLegacyData(ply.getName().toLowerCase()))
         {
             fm.sendError(sender, "You are already registered!");
             return true;
@@ -34,19 +34,19 @@ public class Register extends Command
             return true;
         }
         
-        if (fm.isAuthenticated(ply.getName()) && fm.isFrozen(ply.getName()))
+        if (fm.isAuthenticated(ply.getName().toLowerCase()) && fm.isFrozen(ply.getName().toLowerCase()))
         {
             String[] hash = Util.hash(password);
-            fm.registerPlayer(ply.getName(), hash[0], hash[1], true);
-            fm.unfreezePlayer(ply.getName());
-        } else if (!fm.isAuthenticated(ply.getName())) {
+            fm.registerPlayer(ply.getName().toLowerCase(), hash[0], hash[1], true);
+            fm.unfreezePlayer(ply.getName().toLowerCase());
+        } else if (!fm.isAuthenticated(ply.getName().toLowerCase())) {
             String[] hash = Util.hash(password);
-            fm.registerPlayer(ply.getName(), hash[0], hash[1], false);
-            fm.authenticatePlayer(ply.getName());
+            fm.registerPlayer(ply.getName().toLowerCase(), hash[0], hash[1], false);
+            fm.authenticatePlayer(ply.getName().toLowerCase());
         }
         
         fm.sendSuccess(sender, "Successfully registered!");
-        System.out.println(String.format("Player '%s' registered.", ply.getName()));
+        System.out.println(String.format("Player '%s' registered.", ply.getName().toLowerCase()));
         return true;
     }
 }

@@ -18,19 +18,19 @@ public class ChangePassword extends Command
     public boolean run(CommandSender sender, String[] args)
     {
         Player ply = (Player) sender;
-        if (!fm.isRegistered(ply.getName()))
+        if (!fm.isRegistered(ply.getName().toLowerCase()))
         {
             fm.sendError(sender, "You must register first!");
             return true;
         }
-        if (!fm.isAuthenticated(ply.getName()))
+        if (!fm.isAuthenticated(ply.getName().toLowerCase()))
         {
             fm.sendError(sender, "You must login first!");
             return true;
         }
         if (args.length < 2)
             return false;
-        Account account = fm.getAccount(ply.getName());
+        Account account = fm.getAccount(ply.getName().toLowerCase());
         String oldPassword = account.password;
         String newPassword = args[1];
         if (Util.hash(args[0], account.salt).equals(oldPassword))
@@ -41,7 +41,7 @@ public class ChangePassword extends Command
             account.approved = false;
             fm.updateAccount(account);
             fm.sendSuccess(sender, "Successfully changed password! You will need to login again.");
-            fm.deauthenticatePlayer(ply.getName());
+            fm.deauthenticatePlayer(ply.getName().toLowerCase());
             return true;
         }
         fm.sendError(sender, "Old password was incorrect!");

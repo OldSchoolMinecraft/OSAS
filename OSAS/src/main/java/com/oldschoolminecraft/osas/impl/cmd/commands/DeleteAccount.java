@@ -20,7 +20,7 @@ public class DeleteAccount extends Command
             return false;
         }
         String username = args[0];
-        if (!fm.isRegistered(username))
+        if (!fm.isRegistered(username.toLowerCase()))
         {
             fm.sendError(sender, "That player doesn't have an account!");
             return true;
