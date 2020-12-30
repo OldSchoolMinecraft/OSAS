@@ -43,11 +43,13 @@ public class Login extends Command
             fm.sendError(sender, "You must register first!");
             return true;
         }
+        
         if (fm.isAuthenticated(ply.getName()) && !fm.isFrozen(ply.getName()))
         {
             fm.sendError(sender, "You are already logged in!");
             return true;
         }
+        
         Account account = fm.getAccount(ply.getName());
         String inputPasswd = Util.hash(args[0], account.salt);
         if (inputPasswd.equals(account.password))
