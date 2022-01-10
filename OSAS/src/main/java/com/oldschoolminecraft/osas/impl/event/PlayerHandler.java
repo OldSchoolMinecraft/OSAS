@@ -2,33 +2,20 @@ package com.oldschoolminecraft.osas.impl.event;
 
 import java.io.IOException;
 
+import com.projectposeidon.johnymuffin.ConnectionPause;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerBucketEmptyEvent;
-import org.bukkit.event.player.PlayerBucketFillEvent;
-import org.bukkit.event.player.PlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerListener;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.Plugin;
 
 import com.oldschoolminecraft.osas.OSAS;
 import com.oldschoolminecraft.osas.Util;
 import com.oldschoolminecraft.osas.impl.Hook;
 import com.oldschoolminecraft.osas.impl.fallback.FallbackManager;
-import com.projectposeidon.johnymuffin.ConnectionPause;
 
 @SuppressWarnings("all")
 public class PlayerHandler extends PlayerListener
@@ -89,6 +76,14 @@ public class PlayerHandler extends PlayerListener
                 ex.printStackTrace();
             }
         });
+    }
+
+    public void onPlayerJoin(final PlayerLoginEvent event) {
+        //Send authentication event
+        if(fm.isAuthenticated(event.getPlayer().getName().toLowerCase())) {
+            PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(event.getPlayer().getUniqueId(), true);
+            Bukkit.getPluginManager().callEvent(authenticationEvent);
+        }
     }
 
     public void onPlayerQuit(final PlayerQuitEvent event)

@@ -1,5 +1,7 @@
 package com.oldschoolminecraft.osas.impl.cmd.commands;
 
+import com.oldschoolminecraft.osas.impl.event.PlayerAuthenticationEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -47,6 +49,8 @@ public class Register extends Command
         
         fm.sendSuccess(sender, "Successfully registered!");
         System.out.println(String.format("Player '%s' registered.", ply.getName().toLowerCase()));
+        PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
+        Bukkit.getPluginManager().callEvent(authenticationEvent);
         return true;
     }
 }
