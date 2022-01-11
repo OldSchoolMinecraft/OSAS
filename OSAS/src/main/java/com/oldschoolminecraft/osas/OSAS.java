@@ -62,6 +62,7 @@ public class OSAS extends JavaPlugin
         getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT, playerHandler, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Type.PLAYER_INTERACT_ENTITY, playerHandler, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Type.PLAYER_PORTAL, playerHandler, Priority.Normal, this);
+        getServer().getPluginManager().registerEvent(Type.PLAYER_JOIN, playerHandler, Priority.Normal, this);
         
         getServer().getPluginManager().registerEvent(Type.ENTITY_DAMAGE, entityHandler, Priority.Normal, this);
         getServer().getPluginManager().registerEvent(Type.ENTITY_TARGET, entityHandler, Priority.Normal, this);

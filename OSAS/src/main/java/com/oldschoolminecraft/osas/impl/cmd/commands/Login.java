@@ -1,5 +1,7 @@
 package com.oldschoolminecraft.osas.impl.cmd.commands;
 
+import com.oldschoolminecraft.osas.impl.event.PlayerAuthenticationEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +35,8 @@ public class Login extends Command
                 }
                 fm.sendSuccess(sender, "Successfully logged in!");
                 System.out.println(String.format("Player '%s' logged in.", ply.getName().toLowerCase()));
+                PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
+                Bukkit.getPluginManager().callEvent(authenticationEvent);
             } else {
                 fm.sendError(sender, "Invalid password!");
             }
@@ -65,6 +69,8 @@ public class Login extends Command
             }
             fm.sendSuccess(sender, "Successfully logged in!");
             System.out.println(String.format("Player '%s' logged in.", ply.getName().toLowerCase()));
+            PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
+            Bukkit.getPluginManager().callEvent(authenticationEvent);
         } else {
             fm.sendError(sender, "Invalid password!");
             ply.kickPlayer(ChatColor.RED + "Invalid password!");
