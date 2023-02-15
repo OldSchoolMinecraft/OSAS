@@ -1,36 +1,19 @@
-apply plugin: 'java'
-apply plugin: 'eclipse'
+plugins {
+	id 'java'
+	id 'idea'
+}
 
 repositories
 {
-	flatDir { dirs 'libs' }
-	
-    jcenter()
     mavenCentral()
 }
 
-configurations
-{
-    extraLibs
-}
 
 dependencies
 {
-	compile (name:'poseidon', ext:'jar')
-	compile (name:'meridian-serial-1.1', ext:'jar')
-	extraLibs (name:'meridian-serial-1.1', ext:'jar')
-	
-	compile group: 'org.json', name: 'json', version: '20180813'
-	extraLibs 'org.json:json:20180813'
-	
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
-	extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
-}
+	implementation files("libs/poseidon.jar")
+	implementation files("libs/meridian-serial-1.1.jar")
 
-jar
-{
-    from
-    {
-        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
-    }
+	implementation group: 'org.json', name: 'json', version: '20180813'
+	implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
 }
