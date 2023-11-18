@@ -1,5 +1,7 @@
 package net.oldschoolminecraft.osas;
 
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import com.projectposeidon.johnymuffin.ConnectionPause;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,9 +14,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.*;
 
+import java.io.FileWriter;
+
 @SuppressWarnings("all")
 public class PlayerHandler extends PlayerListener
 {
+    private static final Gson gson = new Gson();
+
     private OSAS osas;
     private PlayerTracker tracker;
 
@@ -61,7 +67,18 @@ public class PlayerHandler extends PlayerListener
         if (!account.isRegistered())
             sendDelayedMessage(player, ChatColor.RED + "Register with /register <password>", 10); //player.sendMessage(ChatColor.RED + "Register with /register <password>");
         else if (!account.isLoggedIn())
+        {
+            Location lastLogout = account.getLastLogoutLocation();
+            if (lastLogout != null)
+            {
+                Location spawn = OSAS.instance.isEssentialsInstalled() ? OSAS.instance.getEssentials().getSpawn().getSpawn("default") : new Location(Bukkit.getServer().getWorld("world"), 0, 0, 0, 0, 0);
+                player.teleport(spawn);
+                account.setInventory(player.getInventory());
+                player.getInventory().clear();
+            }
+
             sendDelayedMessage(player, ChatColor.RED + "Login with /login <password>", 10); //player.sendMessage(ChatColor.RED + "Login with /login <password>");
+        }
     }
 
     private void sendDelayedMessage(Player player, String message, long delay)
@@ -77,6 +94,13 @@ public class PlayerHandler extends PlayerListener
     {
         try
         {
+            String name = event.getPlayer().getName().toLowerCase();
+            OfflineAccount account = tracker.getTrackedAccount(name);
+            account.setLastLogoutLocation(event.getPlayer().getLocation());
+            try (JsonWriter writer = new JsonWriter(new FileWriter(account.getAccountFile())))
+            {
+                gson.toJson(account, AccountModel.class, writer);
+            }
             tracker.untrackPlayer(event.getPlayer().getName().toLowerCase());
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -14,11 +14,11 @@ commands:
         usage: /passwd <old> <new>
         aliases:
             - pwd
+            - changepassword
     deluser:
         description: Delete an account
         usage: /deluser <username>
         permission: osas.deluser
         default: op
 dependencies:
-    - 'org.json:json:20180813'
-    - 'com.fasterxml.jackson.core:jackson-databind:2.10.0'
+    - 'com.google.code.gson:gson:2.10.1'

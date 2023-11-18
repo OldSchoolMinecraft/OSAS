@@ -1,28 +1,39 @@
 package net.oldschoolminecraft.osas;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.earth2me.essentials.Essentials;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonWriter;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.player.PlayerListener;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class OSAS extends JavaPlugin
 {
+    private static final Gson gson = new Gson();
+
     public static OSAS instance;
     private PlayerTracker tracker;
+    private Essentials essentialsHandle;
 
     public void onEnable()
     {
         instance = this;
         tracker = new PlayerTracker();
+
+        try
+        {
+            essentialsHandle = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+        } catch (Exception ex) {
+            System.out.println("OSAS did not detect Essentials installed. Using 0,0 in world 'world' as default spawn point for players.");
+        }
 
         PlayerHandler playerHandler = new PlayerHandler(this, tracker);
         getServer().getPluginManager().registerSuperEvents(playerHandler, this);
@@ -46,6 +57,7 @@ public class OSAS extends JavaPlugin
                 sender.sendMessage(ChatColor.RED + "Usage: /login <password>");
                 return true;
             }
+            Player player = (Player) sender;
 
             String password = args[0];
             if (password.isEmpty())
@@ -74,6 +86,10 @@ public class OSAS extends JavaPlugin
                 if (account.login(password))
                 {
                     sender.sendMessage(ChatColor.GREEN + "Successfully logged in.");
+                    Location lastLogoutPos = account.getLastLogoutLocation();
+                    if (lastLogoutPos != null)
+                        player.teleport(lastLogoutPos);
+                    restoreInventory(player, account.getInventory());
                 } else {
                     ((Player) sender).kickPlayer(ChatColor.RED + "Incorrect password.");
                 }
@@ -97,6 +113,8 @@ public class OSAS extends JavaPlugin
                 return true;
             }
 
+            Player player = (Player) sender;
+
             try
             {
                 OfflineAccount account = new OfflineAccount(sender.getName());
@@ -106,7 +124,7 @@ public class OSAS extends JavaPlugin
                     return true;
                 }
             } catch (AuthenticationException ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
                 sender.sendMessage(ChatColor.RED + "Failed to register account. Please report this to an administrator.");
                 return true;
             }
@@ -126,12 +144,17 @@ public class OSAS extends JavaPlugin
                 model.username = sender.getName().toLowerCase();
                 model.password = hash[0];
                 model.salt = hash[1];
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.writeValue(new File(getDataFolder(), "users/" + sender.getName().toLowerCase() + ".json"), model);
-                sender.sendMessage(ChatColor.GREEN + "Successfully registered account.");
+
+                File dataFile = new File(getDataFolder(), "users/" + sender.getName().toLowerCase() + ".json");
+                try (JsonWriter writer = new JsonWriter(new FileWriter(dataFile)))
+                {
+                    gson.toJson(model, AccountModel.class, writer);
+                    sender.sendMessage(ChatColor.GREEN + "Successfully registered account.");
+                }
+
                 return true;
             } catch (IOException ex) {
-                ex.printStackTrace();
+                ex.printStackTrace(System.err);
                 sender.sendMessage(ChatColor.RED + "Failed to register account. Please report this to an administrator.");
             }
         }
@@ -198,9 +221,13 @@ public class OSAS extends JavaPlugin
                     model.username = sender.getName();
                     model.password = hash[0];
                     model.salt = hash[1];
-                    ObjectMapper mapper = new ObjectMapper();
-                    mapper.writeValue(new File(getDataFolder(), "users/" + sender.getName().toLowerCase() + ".json"), model);
-                    sender.sendMessage(ChatColor.GREEN + "Successfully changed password.");
+
+                    File dataFile = new File(getDataFolder(), "users/" + sender.getName().toLowerCase() + ".json");
+                    try (FileWriter writer = new FileWriter(dataFile))
+                    {
+                        gson.toJson(model, AccountModel.class, writer);
+                        sender.sendMessage(ChatColor.GREEN + "Successfully changed password.");
+                    }
                 } else {
                     sender.sendMessage(ChatColor.RED + "Incorrect password.");
                     return true;
@@ -208,12 +235,28 @@ public class OSAS extends JavaPlugin
             } catch (AuthenticationException ex) {
                 sender.sendMessage(ChatColor.RED + ex.getMessage());
             } catch (IOException e) {
-                e.printStackTrace();
+                e.printStackTrace(System.err);
                 sender.sendMessage(ChatColor.RED + "An unknown error occurred while changing your password. Please report this to an administrator.");
             }
         }
 
         return false;
+    }
+
+    private void restoreInventory(Player player, PlayerInventory inventory)
+    {
+        player.getInventory().setContents(inventory.getContents());
+        player.getInventory().setArmorContents(inventory.getArmorContents());
+    }
+
+    public boolean isEssentialsInstalled()
+    {
+        return essentialsHandle != null;
+    }
+
+    public Essentials getEssentials()
+    {
+        return essentialsHandle;
     }
 
     public void onDisable()

@@ -2,9 +2,12 @@ package net.oldschoolminecraft.osas;
 
 import java.util.HashMap;
 
+/**
+ * This class tracks online & connected players in memory.
+ */
 public class PlayerTracker
 {
-    private HashMap<String, OfflineAccount> offlineAccounts;
+    private final HashMap<String, OfflineAccount> offlineAccounts;
 
     public PlayerTracker()
     {

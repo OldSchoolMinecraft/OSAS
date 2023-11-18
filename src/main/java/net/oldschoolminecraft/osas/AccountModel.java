@@ -6,4 +6,5 @@ public class AccountModel
     public String password;
     public String salt;
     public boolean approved;
+    public SerializableLocation lastLogoutLocation;
 }

@@ -1,16 +1,26 @@
 package net.oldschoolminecraft.osas;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class OfflineAccount
 {
+    private static final Gson gson = new Gson();
+
     private String username;
     private String passwordHash;
     private String salt;
     private boolean loggedIn = false;
+    private Location lastLogoutLocation;
+    private PlayerInventory inventory;
 
     public OfflineAccount(String username) throws AuthenticationException
     {
@@ -59,11 +69,13 @@ public class OfflineAccount
 
     private void loadData() throws Exception
     {
-        ObjectMapper mapper = new ObjectMapper();
-        AccountModel account = mapper.readValue(getAccountFile(), AccountModel.class);
-        this.passwordHash = account.password;
-        this.salt = account.salt;
-//        System.out.println(String.format("Loaded account data for %s (pwd=%s, salt=%s)", username, passwordHash, salt));
+        try (JsonReader reader = new JsonReader(new FileReader(getAccountFile())))
+        {
+            AccountModel acc = gson.fromJson(reader, AccountModel.class);
+            this.passwordHash = acc.password;
+            this.salt = acc.salt;
+            this.lastLogoutLocation = acc.lastLogoutLocation != null ? acc.lastLogoutLocation.getBukkitLocation() : null;
+        }
     }
 
     public String getUsername()
@@ -79,5 +91,25 @@ public class OfflineAccount
     public String getSalt()
     {
         return salt;
+    }
+
+    public Location getLastLogoutLocation()
+    {
+        return lastLogoutLocation;
+    }
+
+    public void setLastLogoutLocation(Location location)
+    {
+        this.lastLogoutLocation = location;
+    }
+
+    public PlayerInventory getInventory()
+    {
+        return inventory;
+    }
+
+    public void setInventory(PlayerInventory inv)
+    {
+        this.inventory = inv;
     }
 }
