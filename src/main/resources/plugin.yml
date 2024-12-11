@@ -2,8 +2,6 @@ name: OSAS
 version: 0
 author: Old School Minecraft
 main: com.oldschoolminecraft.osas.OSAS
-depend:
-    - Essentials
 commands:
     register:
         description: Register an account
