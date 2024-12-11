@@ -10,6 +10,8 @@ import com.oldschoolminecraft.osas.Util;
 import com.oldschoolminecraft.osas.impl.cmd.Command;
 import com.oldschoolminecraft.osas.impl.fallback.Account;
 
+import java.util.Objects;
+
 public class Login extends Command
 {
     public Login()
@@ -34,7 +36,8 @@ public class Login extends Command
                     fm.authenticatePlayer(ply.getName().toLowerCase());
                 }
                 fm.sendSuccess(sender, "Successfully logged in!");
-                System.out.println(String.format("Player '%s' logged in.", ply.getName().toLowerCase()));
+                System.out.printf("[OSAS] Player '%s' logged in with valid password.%n (FakeOnline data converted)", ply.getName().toLowerCase());
+                Util.loadInventory(ply);
                 PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
                 Bukkit.getPluginManager().callEvent(authenticationEvent);
             } else {
@@ -57,7 +60,7 @@ public class Login extends Command
         
         Account account = fm.getAccount(ply.getName().toLowerCase());
         String inputPasswd = Util.hash(args[0], account.salt);
-        if (inputPasswd.equals(account.password))
+        if (Objects.equals(inputPasswd, account.password))
         {
             if (fm.isAuthenticated(ply.getName().toLowerCase()) && fm.isFrozen(ply.getName().toLowerCase()))
             {
@@ -68,7 +71,8 @@ public class Login extends Command
                 fm.authenticatePlayer(ply.getName().toLowerCase());
             }
             fm.sendSuccess(sender, "Successfully logged in!");
-            System.out.println(String.format("Player '%s' logged in.", ply.getName().toLowerCase()));
+            System.out.printf("[OSAS] Player '%s' logged in with valid password.%n", ply.getName().toLowerCase());
+            Util.loadInventory(ply);
             PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
             Bukkit.getPluginManager().callEvent(authenticationEvent);
         } else {

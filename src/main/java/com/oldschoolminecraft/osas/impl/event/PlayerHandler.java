@@ -2,14 +2,17 @@ package com.oldschoolminecraft.osas.impl.event;
 
 import java.io.IOException;
 
+import com.earth2me.essentials.UserData;
 import com.projectposeidon.johnymuffin.ConnectionPause;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.oldschoolminecraft.osas.OSAS;
@@ -22,6 +25,11 @@ public class PlayerHandler extends PlayerListener
 {
     private OSAS osas = OSAS.instance;
     private FallbackManager fm = osas.fallbackManager;
+
+    public void onPlayerItemDamage(PlayerItemDamageEvent event)
+    {
+        event.setCancelled(true); // nope.avi
+    }
 
     public void onPlayerPreLogin(PlayerPreLoginEvent event)
     {
@@ -83,7 +91,14 @@ public class PlayerHandler extends PlayerListener
         if(fm.isAuthenticated(event.getPlayer().getName().toLowerCase())) {
             PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(event.getPlayer().getUniqueId(), true);
             Bukkit.getPluginManager().callEvent(authenticationEvent);
+            return;
         }
+
+        FallbackManager fbm = OSAS.instance.fallbackManager;
+        ItemStack[] items = event.getPlayer().getInventory().getContents();
+        ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
+        Util.saveInventory(items, armor, event.getPlayer().getName().toLowerCase());
+        event.getPlayer().getInventory().clear();
     }
 
     public void onPlayerQuit(final PlayerQuitEvent event)

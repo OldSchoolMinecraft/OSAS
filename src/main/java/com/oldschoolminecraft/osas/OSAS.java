@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.earth2me.essentials.Essentials;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,13 +31,15 @@ public class OSAS extends JavaPlugin
     public PlayerHandler playerHandler;
     public EntityHandler entityHandler;
     public CommandManager cmdm;
-    
+    public Essentials ess;
+
     public final boolean debugMode = true;
     
     public void onEnable()
     {
         instance = this;
 
+        ess = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
         manager = new HookManager();
         dc = new FakeOnlineDataConverter();
         fallbackManager = new FallbackManager();

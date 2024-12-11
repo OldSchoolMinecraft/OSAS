@@ -19,6 +19,8 @@ dependencies
 	compile (name:'poseidon', ext:'jar')
 	compile (name:'meridian-serial-1.1', ext:'jar')
 	extraLibs (name:'meridian-serial-1.1', ext:'jar')
+	compile (name:'Essentials', ext:'jar')
+	extraLibs (name:'Essentials', ext:'jar')
 	
 	compile group: 'org.json', name: 'json', version: '20180813'
 	extraLibs 'org.json:json:20180813'
