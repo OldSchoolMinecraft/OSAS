@@ -1,11 +1,11 @@
 package com.oldschoolminecraft.osas;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.earth2me.essentials.Essentials;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,7 +31,6 @@ public class OSAS extends JavaPlugin
     public PlayerHandler playerHandler;
     public EntityHandler entityHandler;
     public CommandManager cmdm;
-    public Essentials ess;
 
     public final boolean debugMode = true;
     
@@ -39,7 +38,8 @@ public class OSAS extends JavaPlugin
     {
         instance = this;
 
-        ess = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
+        new File(getDataFolder(), "inventories/").mkdirs();
+
         manager = new HookManager();
         dc = new FakeOnlineDataConverter();
         fallbackManager = new FallbackManager();

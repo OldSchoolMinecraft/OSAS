@@ -36,12 +36,14 @@ public class Login extends Command
                     fm.authenticatePlayer(ply.getName().toLowerCase());
                 }
                 fm.sendSuccess(sender, "Successfully logged in!");
-                System.out.printf("[OSAS] Player '%s' logged in with valid password.%n (FakeOnline data converted)", ply.getName().toLowerCase());
+                System.out.println(String.format("Player '%s' logged in with valid password. (FakeOnline data converted)", ply.getName().toLowerCase()));
                 Util.loadInventory(ply);
                 PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
                 Bukkit.getPluginManager().callEvent(authenticationEvent);
             } else {
+                Util.loadInventory(ply);
                 fm.sendError(sender, "Invalid password!");
+                ply.kickPlayer(ChatColor.RED + "Invalid password!");
             }
             return true;
         }
@@ -71,11 +73,13 @@ public class Login extends Command
                 fm.authenticatePlayer(ply.getName().toLowerCase());
             }
             fm.sendSuccess(sender, "Successfully logged in!");
-            System.out.printf("[OSAS] Player '%s' logged in with valid password.%n", ply.getName().toLowerCase());
+            System.out.println(String.format("Player '%s' logged in with valid password.", ply.getName().toLowerCase()));
             Util.loadInventory(ply);
+            Util.saveInventory(ply, true);
             PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
             Bukkit.getPluginManager().callEvent(authenticationEvent);
         } else {
+            Util.loadInventory(ply);
             fm.sendError(sender, "Invalid password!");
             ply.kickPlayer(ChatColor.RED + "Invalid password!");
         }

@@ -1,6 +1,7 @@
 package com.oldschoolminecraft.osas;
 
 import com.google.gson.*;
+import com.oldschoolminecraft.osas.impl.fallback.FallbackManager;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -20,6 +21,15 @@ import javax.crypto.spec.PBEKeySpec;
 public class Util
 {
     private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    public static void saveInventory(Player ply, boolean backup)
+    {
+        FallbackManager fbm = OSAS.instance.fallbackManager;
+        ItemStack[] items = ply.getInventory().getContents();
+        ItemStack[] armor = ply.getInventory().getArmorContents();
+        Util.saveInventory(items, armor, ply.getName().toLowerCase() + (backup ? ".bak.json" : ".json"));
+        if (!backup) ply.getInventory().clear();
+    }
 
     public static void saveInventory(ItemStack[] items, ItemStack[] armor, String fileName)
     {
@@ -69,7 +79,7 @@ public class Util
 
     public static void loadInventory(Player player)
     {
-        File targetFile = new File(OSAS.instance.getDataFolder(), "inventories/" + player.getName().toLowerCase());
+        File targetFile = new File(OSAS.instance.getDataFolder(), "inventories/" + player.getName().toLowerCase() + ".json");
         if (!targetFile.exists())
         {
             System.err.println("[OSAS] INVENTORY NOT FOUND FOR: " + player.getName());

@@ -2,17 +2,12 @@ package com.oldschoolminecraft.osas.impl.event;
 
 import java.io.IOException;
 
-import com.earth2me.essentials.UserData;
 import com.projectposeidon.johnymuffin.ConnectionPause;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.*;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import com.oldschoolminecraft.osas.OSAS;
@@ -86,7 +81,7 @@ public class PlayerHandler extends PlayerListener
         });
     }
 
-    public void onPlayerJoin(final PlayerLoginEvent event) {
+    public void onPlayerJoin(final PlayerJoinEvent event) {
         //Send authentication event
         if(fm.isAuthenticated(event.getPlayer().getName().toLowerCase())) {
             PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(event.getPlayer().getUniqueId(), true);
@@ -94,17 +89,16 @@ public class PlayerHandler extends PlayerListener
             return;
         }
 
-        FallbackManager fbm = OSAS.instance.fallbackManager;
-        ItemStack[] items = event.getPlayer().getInventory().getContents();
-        ItemStack[] armor = event.getPlayer().getInventory().getArmorContents();
-        Util.saveInventory(items, armor, event.getPlayer().getName().toLowerCase());
-        event.getPlayer().getInventory().clear();
+        Util.saveInventory(event.getPlayer(), false);
     }
 
     public void onPlayerQuit(final PlayerQuitEvent event)
     {
         try
         {
+            if (!fm.isAuthenticated(event.getPlayer().getName().toLowerCase()))
+                Util.loadInventory(event.getPlayer());
+
             fm.deauthenticatePlayer(event.getPlayer().getName().toLowerCase());
             fm.removeAuthenticationRecord(event.getPlayer().getName().toLowerCase());
         } catch (Exception ex) {

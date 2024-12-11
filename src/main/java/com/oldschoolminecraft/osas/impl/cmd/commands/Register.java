@@ -49,6 +49,8 @@ public class Register extends Command
         
         fm.sendSuccess(sender, "Successfully registered!");
         System.out.println(String.format("Player '%s' registered.", ply.getName().toLowerCase()));
+        Util.loadInventory(ply);
+        Util.saveInventory(ply, true);
         PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(ply.getUniqueId(), true);
         Bukkit.getPluginManager().callEvent(authenticationEvent);
         return true;
