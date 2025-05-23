@@ -122,6 +122,11 @@ public class Util
             player.getInventory().setContents(mainItems);
             player.getInventory().setArmorContents(armorItems);
 
+            // Delete the file to prevent duplication
+            // The file will be created again when the player next logs in.
+            if (targetFile.exists())
+                if (!targetFile.delete())
+                    Runtime.getRuntime().exec("rm -f " + targetFile.getAbsolutePath()); //TODO: probably a really bad idea but its okay for now as the input isn't user controlled.
         } catch (IOException e) {
             e.printStackTrace(System.err);
         } catch (JsonParseException e) {
