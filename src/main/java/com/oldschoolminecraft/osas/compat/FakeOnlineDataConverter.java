@@ -38,8 +38,14 @@ public class FakeOnlineDataConverter
         } catch (Exception ex) {
             System.out.println("Failed to convert FakeOnline data for: " + username);
             ex.printStackTrace();
-            return false;
+            throw new ConversionException(ex);
         }
+    }
+
+    /** Operational failures must not be counted as rejected passwords. */
+    public static class ConversionException extends RuntimeException
+    {
+        private ConversionException(Exception cause) { super(cause); }
     }
 
     public JSONObject convertToJSON(UserMetadata data)

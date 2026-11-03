@@ -1,8 +1,9 @@
 package com.oldschoolminecraft.osas.impl.cmd.commands;
 
 import com.oldschoolminecraft.osas.impl.event.PlayerAuthenticationEvent;
+import com.oldschoolminecraft.osas.impl.AuthenticationGuard;
+import com.oldschoolminecraft.osas.compat.FakeOnlineDataConverter;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,10 +23,27 @@ public class Login extends Command
     public boolean run(CommandSender sender, String[] args)
     {
         Player ply = (Player) sender;
+        if (osas.authenticationGuard.isBlocked(AuthenticationGuard.addressOf(ply)))
+        {
+            ply.kickPlayer(AuthenticationGuard.BLOCK_MESSAGE);
+            return true;
+        }
+        if (args.length < 1)
+            return false;
         
         if (!fm.isRegistered(ply.getName().toLowerCase()) && osas.dc.hasLegacyData(ply.getName().toLowerCase()))
         {
-            if (osas.dc.convert(ply.getName().toLowerCase(), args[0]))
+            boolean converted;
+            try
+            {
+                converted = osas.dc.convert(ply.getName().toLowerCase(), args[0]);
+            } catch (FakeOnlineDataConverter.ConversionException ex) {
+                Util.loadInventory(ply);
+                fm.sendError(sender, "Unable to read your legacy account. Contact an administrator.");
+                ply.kickPlayer("Authentication temporarily unavailable. Contact an administrator.");
+                return true;
+            }
+            if (converted)
             {
                 if (fm.isAuthenticated(ply.getName().toLowerCase()) && fm.isFrozen(ply.getName().toLowerCase()))
                 {
@@ -43,7 +61,7 @@ public class Login extends Command
             } else {
                 Util.loadInventory(ply);
                 fm.sendError(sender, "Invalid password!");
-                ply.kickPlayer(ChatColor.RED + "Invalid password!");
+                osas.authenticationGuard.recordFailure(ply);
             }
             return true;
         }
@@ -81,7 +99,7 @@ public class Login extends Command
         } else {
             Util.loadInventory(ply);
             fm.sendError(sender, "Invalid password!");
-            ply.kickPlayer(ChatColor.RED + "Invalid password!");
+            osas.authenticationGuard.recordFailure(ply);
         }
         return true;
     }

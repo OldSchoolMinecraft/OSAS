@@ -2,6 +2,7 @@ package com.oldschoolminecraft.osas.impl.fallback;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -110,9 +111,9 @@ public class FallbackManager
     
     public void removeAuthenticationRecord(String username)
     {
-        for (AuthenticationRecord rec : authenticationRecords)
-            if (rec.username.toLowerCase().equals(username.toLowerCase()))
-                authenticationRecords.remove(rec);
+        for (Iterator<AuthenticationRecord> records = authenticationRecords.iterator(); records.hasNext();)
+            if (records.next().username.toLowerCase().equals(username.toLowerCase()))
+                records.remove();
     }
     
     public AuthenticationRecord getAuthenticationRecord(String username)

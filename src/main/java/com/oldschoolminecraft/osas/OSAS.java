@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.logging.Logger;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 
 import com.oldschoolminecraft.osas.compat.FakeOnlineDataConverter;
 import com.oldschoolminecraft.osas.impl.HookManager;
+import com.oldschoolminecraft.osas.impl.AuthenticationGuard;
 import com.oldschoolminecraft.osas.impl.cmd.CommandManager;
 import com.oldschoolminecraft.osas.impl.event.EntityHandler;
 import com.oldschoolminecraft.osas.impl.event.PlayerHandler;
@@ -31,6 +33,7 @@ public class OSAS extends JavaPlugin
     public PlayerHandler playerHandler;
     public EntityHandler entityHandler;
     public CommandManager cmdm;
+    public AuthenticationGuard authenticationGuard;
 
     public final boolean debugMode = true;
     
@@ -39,6 +42,20 @@ public class OSAS extends JavaPlugin
         instance = this;
 
         new File(getDataFolder(), "inventories/").mkdirs();
+
+        int maxFailures = getConfiguration().getInt("authentication.max-failed-attempts", 3);
+        int maxAccounts = getConfiguration().getInt("authentication.max-failed-accounts", 3);
+        if (maxFailures < 1 || maxAccounts < 1)
+        {
+            Logger.getLogger("Minecraft").warning("OSAS authentication thresholds must be positive; using 3.");
+            maxFailures = 3;
+            maxAccounts = 3;
+        }
+        getConfiguration().setProperty("authentication.max-failed-attempts", maxFailures);
+        getConfiguration().setProperty("authentication.max-failed-accounts", maxAccounts);
+        getConfiguration().save();
+        authenticationGuard = new AuthenticationGuard(getServer(), Logger.getLogger("Minecraft"),
+                new File(getDataFolder(), "authentication-failures.json"), maxFailures, maxAccounts);
 
         manager = new HookManager();
         dc = new FakeOnlineDataConverter();

@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import com.oldschoolminecraft.osas.OSAS;
 import com.oldschoolminecraft.osas.Util;
 import com.oldschoolminecraft.osas.impl.Hook;
+import com.oldschoolminecraft.osas.impl.AuthenticationGuard;
 import com.oldschoolminecraft.osas.impl.fallback.FallbackManager;
 
 @SuppressWarnings("all")
@@ -31,9 +32,18 @@ public class PlayerHandler extends PlayerListener
         String username = event.getName().toLowerCase();
         String ip = event.getAddress().getHostAddress();
 
+        if (osas.authenticationGuard.isBlocked(ip))
+        {
+            event.disallow(PlayerPreLoginEvent.Result.KICK_BANNED, AuthenticationGuard.BLOCK_MESSAGE);
+            return;
+        }
+        if (event.getResult() != PlayerPreLoginEvent.Result.ALLOWED)
+            return;
+
         ConnectionPause pause = event.addConnectionPause(osas, "OSAS");
         Bukkit.getScheduler().scheduleAsyncDelayedTask(osas, () ->
         {
+            boolean hookStateCreated = false;
             try
             {
                 boolean authenticated = false;
@@ -50,11 +60,15 @@ public class PlayerHandler extends PlayerListener
                     }
                 }
 
+                if (osas.authenticationGuard.isBlocked(ip))
+                    return;
+
                 if (authenticated)
                 {
                     event.allow();
                     
                     // authenticate player
+                    hookStateCreated = true;
                     fm.authenticatePlayer(username);
                     
                     // log auth info
@@ -73,15 +87,35 @@ public class PlayerHandler extends PlayerListener
                     scheduleAfterJoin(username);
                 }
 
-                event.removeConnectionPause(pause);
             } catch (IOException ex) {
-                event.removeConnectionPause(pause);
                 ex.printStackTrace();
+            } finally {
+                try
+                {
+                    // Poseidon does not re-read the result or fire quit for a cancelled prelogin.
+                    if (osas.authenticationGuard.isBlocked(ip))
+                    {
+                        event.cancelPlayerLogin(AuthenticationGuard.BLOCK_MESSAGE);
+                        if (hookStateCreated)
+                        {
+                            fm.deauthenticatePlayer(username);
+                            fm.removeAuthenticationRecord(username);
+                            fm.unfreezePlayer(username);
+                        }
+                    }
+                } finally {
+                    event.removeConnectionPause(pause);
+                }
             }
         });
     }
 
     public void onPlayerJoin(final PlayerJoinEvent event) {
+        if (osas.authenticationGuard.isBlocked(AuthenticationGuard.addressOf(event.getPlayer())))
+        {
+            event.getPlayer().kickPlayer(AuthenticationGuard.BLOCK_MESSAGE);
+            return;
+        }
         //Send authentication event
         if(fm.isAuthenticated(event.getPlayer().getName().toLowerCase())) {
             PlayerAuthenticationEvent authenticationEvent = new PlayerAuthenticationEvent(event.getPlayer().getUniqueId(), true);

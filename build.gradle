@@ -25,6 +25,8 @@ dependencies
 	
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
 	extraLibs group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+
+    testCompile 'junit:junit:4.13.2'
 }
 
 jar
